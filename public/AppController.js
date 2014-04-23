@@ -91,19 +91,15 @@ myApp.controller('AppCtrl', function($scope, $rootScope){
 			},
 			axes: {
 			    xaxis: {
-//				    min: 2,
                     min: n,
 				    label: 'Time',
 					labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
 					fontFamily: 'Georgia, Serif',
 					renderer:$.jqplot.DateAxisRenderer,
 					tickOptions: { 
-//					    formatString: '%b %#d, %#I %p',
                         formatString: '%H:%M:%S',
-						fontFamily: 'Georgia, Serif',
-//                                   fontSize:'10pt', 
-//                                   fontFamily:'Tahoma', 
-                                     angle:-60					
+						fontFamily: 'Georgia, Serif', 
+                            angle:-60					
 					},     
 				},
 				yaxis: {
@@ -125,21 +121,10 @@ myApp.controller('AppCtrl', function($scope, $rootScope){
 	$scope.someData = [[], [], []];	
 	socket.on('newTemp', function () {	
         $scope.$apply(function () {
-//            if ($rootScope.sampleNumber < 60) {
-//	$scope.someData = [[
-//		[n, 79],
-//        ['2015-11-28 1:00AM',60.7],
-//        ['2015-11-29 1:00AM',73.7],
-//		['2015-11-29 4:00PM',79.7],
-//		['2015-11-29 8:00PM',69],
-//		['2015-11-29 10:00PM',62],
-//		['2015-12-09 12:00PM',60]
                var date = new Date();
                $scope.someData[0].push([date.getTime(), $rootScope.data]);
 			   $scope.someData[1].push([date.getTime(), $rootScope.data1]);
 			   $scope.someData[2].push([date.getTime(), $rootScope.data2]);
-//		    };
-//    ]];
         });		
 		$scope.myChartOpts = charting.lineChartOptions;
 	    })   	
@@ -154,10 +139,12 @@ myApp.controller('AppCtrl', function($scope, $rootScope){
 		}
 	};
         socket.on('serverSetpt', function(tempSetpt) {
-            $scope.tempSetpt = tempSetpt;
+		    $scope.$apply(function () {
+			   $scope.tempSetpt = tempSetpt;
+//	           $rootScope.tempSetpt = $scope.tempSetpt;
+            });
         });		
-//		$scope.tempSetpt = 67;
-//		console.log($scope.tempSetpt);
+
 		$scope.addSetpt = function () {
         var tempSetpt = $scope.tempSetpt;
         socket.emit('newTempSetpt', tempSetpt);

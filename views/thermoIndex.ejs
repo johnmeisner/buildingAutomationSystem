@@ -101,6 +101,10 @@
 		   background: yellow;
 		   height: 50px;
 		}
+		
+		table, th, td {
+           border: 1px solid black;
+        }
 	</style>
 	
 	<script>
@@ -162,24 +166,35 @@
 	<button ng-click="update()">Update Temp History</button>
 <!--	<button ng-click="customerServiceRequest()">Send Customer Service Request</button>   -->
 	
-<br><br>
+<br><br><br>
 
 	Current Room 1 Temperature: <strong>{{alias}}</strong> F
 	<br>
+	<br>
 	
-    <table>
-      <tr>
-        <th><h4>Temperature History:</h4></th>
+<h3>Room 1 Temperature Hourly Histories from DB:</h3>
+	
+    <table width="400" >
+	    <colgroup>
+            <col span="3" style="background-color:#E6A9EC">
+            </colgroup>
+        <tr>
+<!--        <th><h4>Temperature History:</h4></th>  -->
 
-      </tr>
-      <tr>
-        <td colspan="2">
+     </tr>
+     <tr>
+	     <th>Date/Time</th>
+		 <th>Temperature</th>
+		 <th>Variance</th>
+	</tr>
+<!--        <td colspan="3">   -->
 
-        </td>
-      </tr>
-     <tr ng-repeat="mapping in mappings track by $index ">
-        <td>{{mapping.alias}}</td>
-        <td>{{mapping.url}}</td>  
+<!--        </td>    -->
+<!--      </tr>      -->                                               
+     <tr ng-repeat="mapping in mappings track by $index " align="center">
+        <td>{{mapping.timestamp | date:'MM/dd/yyyy HH:mm:ss' }}</td>
+        <td>{{mapping.alias}}</td> 
+        <td>{{mapping.url}}</td>		
       </tr>
     </table>
 

@@ -2,6 +2,8 @@
 
 // Import Device Configuration Global data
 var deviceConfig = require('./deviceConfig')();
+var Decimator = require('../dsp/decimator');
+var MA = require('moving-average');
 
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
@@ -22,7 +24,18 @@ var Thermostat = require('./thermostat'),
 
 var w = new Weather,     
     d = DeviceTree;   // DeviceTree is object literal data structure, NOT a constructor function
+var	decimator1 = new Decimator(60);   // decimate sample period from 10 sec to 3600 sec (1 hr)
+var	decimator2 = new Decimator(60);
 	
+var mappings = require('../data/mappings');	
+var dbPeriod = 60 * 60 * 1000;  // dB insert every hour   
+                                // verified average of 10 tempF samples had time error of 0.03%
+	
+var timeInterval = 120000;      // 2-min 
+var ma1 = MA(timeInterval);     // EWMA: Exponentially Weighted Moving Average
+                                // when movingAverage method of EWMA object          
+	                            // invoked, previous timeInterval EWMA returned
+							   
 // Create Device Tree Nodes Composites (ie., non-leaf / device)
 var building = new Node(),
     bedroom = new Node(),
@@ -35,6 +48,9 @@ livingRoom.name = "livingRoom";
 var roomList = [bedroom, livingRoom];
 	
 var getTemp = require('./meshDeviceDriver').getTemp;
+var tempF = require('./meshDeviceDriver').tempF;
+var filtered_data = filtered_data || 38;
+var filtered_variance = filtered_variance || 0;
 	
 // Display Date/Time every 50 sec
 var dPeriod = 50000;
@@ -148,8 +164,12 @@ livingRoom.add(thermostat2);
 livingRoom.add(damperActuator2);
 
 getTemp().on('sensorDataReady', function(tempF) {
-//    d.traverse(tempSensor1, 'valueUpdate', tempF);                  // find tempSensor Node and update value
-	d.traverse(bedroom, 'setTempSensor', tempF);	 
+    tempF = tempF;
+	d.traverse(bedroom, 'setTempSensor', tempF);
+    ma1.push(Date.now(), tempF);
+    filtered_data = decimator1.run(ma1.movingAverage());       // current output of EWMA / Decimator
+	filtered_variance = decimator2.run(ma1.variance());
+  	
 });
 
 var index = 0;
@@ -168,7 +188,6 @@ function DataServer(wPeriod) {
 	this.roomTemp = tempSensor1.value;
 	this.damperPosition = damperActuator1.value;
 
-//	var fanPrev = 'off';
 	var heatPrev = 'off';
 	var airPrev = 'off';
 	
@@ -187,31 +206,19 @@ function DataServer(wPeriod) {
 	   else {
 		   toggleAIR(0);
 	   }
-	   
-//	   if(d.traverse(bedroom, 'getActuatorDamper') === 'open') {
 
-       for (var i = 0; i < roomList.length; i++) {
-//		   if (d.traverse(bedroom, 'getActuatorDamper') !== damperPositionPrev) {
-// Remeber only bedroom damper exists	
+       for (var i = 0; i < roomList.length; i++) {	
 		   if (d.traverse(roomList[0], 'getActuatorDamper') !== damperPositionPrev) {
 			   toggleDamper();
 			   damperPositionPrev = d.traverse(bedroom, 'getActuatorDamper');		   
 			}
 		}
-		
-//	   }	   
-	   
-//	    console.log("\ndeviceList[] from traverse(building): " + d.deviceList);
-//		console.log("\ndeviceListValues[] from traverse(building): " + d.deviceListValues);
 
 // Correct for time zone ... UTC/GMT -8 hours ... No daylight saving time 
         var date = new Date();
-		//var ts = String(Math.round(date.getTime()/1000) + date.getTimezoneOffset() * 60);
 		var ts = String(Math.round(date.getTime()/1000) - (8 * 60 * 60));
-		var t = new Date(ts*1000);
-         
-		//console.log("Date / Time is: " + Date() + "\n");
-		console.log("Date / Time is: " + t + "\n" + ts + " " + (date.getTimezoneOffset() * 60));
+		var t = new Date(ts*1000);        
+//		console.log("Date / Time is: " + t + "\n" + ts + " " + (date.getTimezoneOffset() * 60));
     }, dPeriod);
 
 // Data Acquisition Control Type Events	
@@ -221,12 +228,20 @@ function DataServer(wPeriod) {
 	    EventEmitter.call(this);
 		var w = new Weather;
 		w.on('newWeather', function(t) {
-		    console.log("DataServer: Load new ext temp into DeviceTree " + t);
+//		    console.log("DataServer: Load new ext temp into DeviceTree " + t);
 			self.extTempF = t;
 			self.emit('DeviceTreeUpdate');
 		});
 		
     }, wPeriod); 
+	
+// Histories db update 
+
+    setInterval(function () { 
+	    mappings.create(parseFloat(filtered_data).toFixed(2), parseFloat(filtered_variance).toFixed(3), 
+	    function() {console.log("%%%%%%%finished creating collection%%%%%%%%%%%")});
+ 
+	}, dbPeriod);
 	
 // DataServer Class Methods
 
@@ -250,8 +265,7 @@ function DataServer(wPeriod) {
 	    Thermostat.call(this); 
 		this.temperature = d.traverse(roomList[index], 'getThermostatTemperature');
 		this.temperature = (((this.temperature * 9) / 5) + 32);
-		console.log("room name is: " + roomList[index].name);
-//		console.log("thermostat is: " + this.temperature);
+//		console.log("room name is: " + roomList[index].name);
 		return this.temperature;
 	}
 
@@ -260,9 +274,9 @@ function DataServer(wPeriod) {
 	this.setThermostatTemperature = function(thermostatTemperature, index) {
         d.traverse(roomList[index], 'setThermostatTemperature', 
 		thermostatTemperature); 
-		console.log("\nThermostat passed is:");
-		console.log(thermostatTemperature)
-		console.log("\n");
+//		console.log("\nThermostat passed is:");
+//		console.log(thermostatTemperature)
+//		console.log("\n");
 	}
 	
 	this.getDamperPosition = function (index) {
@@ -280,11 +294,11 @@ function DataServer(wPeriod) {
 			    d.traverse(building, 'setFan', onOff);
 				break;
 			case 'heat':
-				console.log(" set heat to " + onOff);
+//				console.log(" set heat to " + onOff);
 			    d.traverse(building, 'setHeat', onOff);
 				break;
 			case 'air':
-			    console.log(" set air to " + onOff);
+//			    console.log(" set air to " + onOff);
 			    d.traverse(building, 'setAir', onOff);
 				break;
 			default:
@@ -297,16 +311,16 @@ function DataServer(wPeriod) {
 //	    console.log(" get fan on/off ");
         switch(buildingActuator) {
 		    case 'fan':
-				console.log(" get fan");
+//				console.log(" get fan");
 			    return d.traverse(building, 'getFan');
 			case 'heat':
-				console.log(" get heat");
+//				console.log(" get heat");
 			    return d.traverse(building, 'getHeat');
 			case 'air':
-				console.log(" get air");
+//				console.log(" get air");
 			    return d.traverse(building, 'getAir');
 			default:
-			    console.log("no such building actuator");
+//			    console.log("no such building actuator");
 		}
   
 	}	

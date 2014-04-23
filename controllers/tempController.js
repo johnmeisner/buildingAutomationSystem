@@ -30,7 +30,7 @@ function TempController (roomName, roomNumber) {
    
    this.setDamperPosition = function (damperPosition) {
 	   this.damperPosition = damperPosition;
-       console.log("TempController damperPosition is " + this.damperPosition)	   
+//       console.log("TempController damperPosition is " + this.damperPosition)	   
    };
    
    this.getDamperPosition = function () {
@@ -68,7 +68,7 @@ function TempController (roomName, roomNumber) {
 		this.damperPosition = deviceValues.d;
 		this.thermostatTemperature = deviceValues.ts;
 		
-	    console.log("tempController: " + "roomTemp is " + this.roomTemp + " thermostat Temperature is " + this.thermostatTemperature);
+//	    console.log("tempController: " + "roomTemp is " + this.roomTemp + " thermostat Temperature is " + this.thermostatTemperature);
 		
 // ************************************ Heat Control *****************************************************	
 
@@ -77,7 +77,7 @@ function TempController (roomName, roomNumber) {
 		    {initialSide: 0});                               // setup hysteresis
             didCross = check(Number(this.roomTemp));	     // verify crossed considering hysteresis
 		
-		    console.log("\n*************\ntempController: didCross is " + didCross + "\nTermostatTemperature is " + this.thermostatTemperature + "\nroomTemp is " + this.roomTemp + "\n*****************\n");
+//		    console.log("\n*************\ntempController: didCross is " + didCross + "\nTermostatTemperature is " + this.thermostatTemperature + "\nroomTemp is " + this.roomTemp + "\n*****************\n");
 		
 // RoomTemp crossed LowThreshold from above .. so open damper
 	        if ((didCross === 1) || (didCross === 0 && (this.roomTemp < (this.thermostatTemperature - 2)))) {	
@@ -108,7 +108,7 @@ function TempController (roomName, roomNumber) {
 		    {initialSide: 0});   // setup hysteresis
             didCross = check(Number(this.roomTemp));	     // verify crossed considering hysteresis
 		
-		    console.log("\n*************\ntempController: didCross is " + didCross + "\nTermostatTemperature is " + this.thermostatTemperature + "\nroomTemp is " + this.roomTemp + "\n*****************\n");
+//		    console.log("\n*************\ntempController: didCross is " + didCross + "\nTermostatTemperature is " + this.thermostatTemperature + "\nroomTemp is " + this.roomTemp + "\n*****************\n");
 		
 // RoomTemp crossed LowThreshold from above .. so open damper
 	        if ((didCross === 1) || (didCross === 0 && (this.roomTemp < (this.thermostatTemperature - 2)))) {	

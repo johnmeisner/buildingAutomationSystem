@@ -48,7 +48,6 @@ function traverse(node, qtype, value) {
 
     if (node.SN != undefined) {         // if SN not undefined must be a device node
 	    if (qtype === undefined) {
-//	       console.log("Device SN: " + node.SN + " type: " + node.type + " value: " + node.value + " name: " + node.name);
 		   deviceList.push(node.name);
         }
         else if (qtype === 'valueUpdate') {
@@ -61,8 +60,7 @@ function traverse(node, qtype, value) {
 		
 		else if (qtype === 'valueSet') {
 		    node.value = value;
-		}		
-		
+		}				
 	}
 	
 	else {                              // must be a composite node so log node name
@@ -86,16 +84,16 @@ function traverse(node, qtype, value) {
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorDamper') {				
                     node.getChild(i).value = value;	
-                    console.log("setActuatorDamper: " + node.getChild(i).value);					
+ //                   console.log("setActuatorDamper: " + node.getChild(i).value);					
                 }				 
 	        }
 	    }
 
 		else if (qtype == 'getActuatorDamper') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorDamper') {
-					console.log("getActuatorDamper: " + node.getChild(i).value);
+//					console.log("getActuatorDamper: " + node.getChild(i).value);
 					return node.getChild(i).value;
                 }				 
 	        }
@@ -104,79 +102,77 @@ function traverse(node, qtype, value) {
 		else if (qtype === 'setThermostatTemperature') {
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'thermostat') {
-					console.log(node.getChild(i).name);
-//                    node.getChild(i).value = value;
+//					console.log(node.getChild(i).name);
                     node.getChild(i).setTemperature(value);					
                 }				 
 	        }
 	    }
 		
         else if (qtype == 'getThermostatTemperature') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'thermostat') {
-//					return node.getChild(i).value;
-                    console.log(node.getChild(i).name);					
+//                    console.log(node.getChild(i).name);					
                     return node.getChild(i).getTemperature();
                 }				 
 	        }
 	    }	
 
         else if (qtype == 'setFan') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorFan') {
-                    console.log(node.getChild(i).name);					
+//                    console.log(node.getChild(i).name);					
                     node.getChild(i).value = value;
                 }				 
 	        }
 	    }	
 		
         else if (qtype == 'setHeat') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorHeat') {
-                    console.log(node.getChild(i).name);					
+//                    console.log(node.getChild(i).name);					
                     node.getChild(i).value = value;
                 }				 
 	        }
 	    }
 		
         else if (qtype == 'setAir') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorAir') {
-                    console.log(node.getChild(i).name);					
+//                    console.log(node.getChild(i).name);					
                     node.getChild(i).value = value;
                 }				 
 	        }
 	    } 
 	
         else if (qtype == 'getFan') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorFan') {
-                    console.log(node.getChild(i).name);					
+//                    console.log(node.getChild(i).name);					
                     return node.getChild(i).value;
                 }				 
 	        }
 	    }
 		
         else if (qtype == 'getHeat') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorHeat') {
-                    console.log(node.getChild(i).name);					
+ //                   console.log(node.getChild(i).name);					
                     return node.getChild(i).value;
                 }				 
 	        }
 	    }
 		
         else if (qtype == 'getAir') {
-		    console.log("selected node is: " + node.name);
+//		    console.log("selected node is: " + node.name);
 		    for (var i = 0; i < node.children.length; i++) {
 		        if (node.getChild(i).type ===  'actuatorAir') {
-                    console.log(node.getChild(i).name);					
+//                    console.log(node.getChild(i).name);					
                     return node.getChild(i).value;
                 }				 
 	        }

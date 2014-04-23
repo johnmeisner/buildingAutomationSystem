@@ -1,7 +1,5 @@
 'use strict'
 
-// This module should include toggleDamper(), getTemp(), onSerial(), onSerialA(). 
-
 var EventEmitter = require('events').EventEmitter;
 var emitter = new EventEmitter();
 
@@ -9,13 +7,11 @@ var emitter = new EventEmitter();
 
 var mappings = require('./mappings'); 
 
-var sampleNum = 0;
-var Angle = 0;
-var newFrame = true;
-//var tempSetpt = 70;
-var tempF = 68;
-var damperOn = 1;
-
+var sampleNum = 0,
+    Angle = 0,
+    newFrame = true,
+    tempF = 68,
+    damperOn = 1;
 
 var damp1Addr = [0x00, 0x13, 0xA2, 0X00, 0X40, 0XC0, 0XAD, 0X37];
 var temp1Addr = [0x00, 0x13, 0xA2, 0X00, 0X40, 0XC0, 0XA9, 0X99];
@@ -24,18 +20,13 @@ var globals = require('../globals')();
  
 function toggleDamper() {
 
-//console.log("angle before:" + Angle);
-
     damperOn = damperOn ? 0 : 1;     // toggle damper full open / full closed
     if (damperOn == 1) {
 	    Angle = 15;
     }
 	else {
 	    Angle = 0;
-	}
-//	io.sockets.emit('newDamperPosition', damperOn);    
-	
-//console.log("angle after:" + Angle);	
+	}    	
 
     var atCmd6;
 	var atCmd4;
@@ -67,11 +58,7 @@ function toggleDamper() {
     sendCmd(damp1Addr, "D2", atCmd2);
 	setTimeout(function(){
 	    setTimeout(function(){		
-		    setTimeout(function(){		   
-//		        setTimeout(function(){
-//                   setTimeout(function(){
-//                   }, 100);				   
-//				sendCmd(damp1Addr, "AC", 0)},10);    // applies new DIO config		   
+		    setTimeout(function(){		   		   
 		    sendCmd(damp1Addr, "D6", atCmd6)},10); 		
 		sendCmd(damp1Addr, "D4", atCmd4)},10);	
 	sendCmd(damp1Addr, "D3", atCmd3)},10);
@@ -98,8 +85,6 @@ function sendCmd(addr, atCmd, cmdData) {
     var chksum  = 0;
     var data = start.concat(addr,addr16,cmdOp,atCmdin,Number(cmdData) ); 
 
-//	console.log(addr);
-
 // calculate checksum
 for (var i = 3; i < data.length; i++){sum += data[i] ; }// calc sum
     sum = 0xFF & sum ;
@@ -108,7 +93,6 @@ for (var i = 3; i < data.length; i++){sum += data[i] ; }// calc sum
  
 	b.serialOpen(port, options, onSerial);
     function onSerial(x) {
-//	    console.log(x);
         var b = require('bonescript');
 		
 		if (x.event == 'data') {
@@ -140,7 +124,6 @@ function getTemp() {
     var port = '/dev/ttyO2'; // set UART port
     var options = { baudrate: 9600} ;
     b.serialOpen(port, options, onSerial);//
-//    var tempF = tempF;
     return emitter;	
 }; 
 
@@ -155,7 +138,6 @@ function onSerial(x) {
     if (x.event == 'open') {
         console.log('***Temp OPENED***');
 		newFrame = true;
-//		readings = [];
     }
 	
     if (x.event == 'data') {
@@ -164,10 +146,6 @@ function onSerial(x) {
 		    readings = [];
 			newFrame = false;
 		}
-	
-//        console.log('***Temp DATA***');	
-//		setTimeout(onSerialA(x), 500);
-//	    console.log(x.data);
 		setTimeout(onSerialA(x), 150);
 		return;
 	}
@@ -190,42 +168,12 @@ function onSerialA(x) {
         var adcData = adcData1 + adcData0 ;
         var mV =  2.41833 * adcData; 
         var tempC = ((mV - 1035) + 60)/(-5.5) ;
-        tempF = tempC * 1.8 + 32;              // subtract constant for error in device
-//        tempF = tempC * 1.8 + 32;              // subtract constant for error in device
+        tempF = tempC * 1.8 + 32;                  // subtract constant for error in device
 		tempF = parseFloat(tempF).toFixed(2);
 		sampleNum++;
-//		globals.tempF = tempF;
-		console.log("meshDeviceDriver: sample number: " + sampleNum + " tempF: " + tempF);
-//        globals.tempF = tempF;		
-		
-/***** Reset Parsing, emit event and update DB Before running Algo *******************/
-
-        mappings.create(tempF, sampleNum, function () {
-//            io.sockets.emit('newMapping', tempF, sampleNum);
-		});
-//		io.sockets.emit('newTemp', tempF, sampleNum);
-        emitter.emit('sensorDataReady', tempF);
-//	    console.log("getTemp(): Room 1 Temperature is: " + " " + tempF + " deg F");
-		
+		console.log("meshDeviceDriver: sample number: " + sampleNum + " tempF: " + tempF);		
+        emitter.emit('sensorDataReady', tempF);	   // emit event to tell new data	
         readings = [];		
-
-/************************ Run Thermostat Control Algorithm ***************************/
-// Air is controlled by Thermostat user (browser) input for entire building.
-// TODO:  Add hysteresis	
-
-//     io.sockets.emit('serverSetpt', tempSetpt);
-	
-
-		 
-//    };			
-		
-/*        mappings.create(tempF, sampleNum, function () {
-            io.sockets.emit('newMapping', tempF, sampleNum);
-		});
-		io.sockets.emit('newTemp', tempF, sampleNum);
-	    console.log("Room 1 Temperature is: " + " " + tempF + " deg F");
-		
-        readings = [];   */
 	}	
  return;                 
 }            // end on SerialA
