@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Line Chart App App</title>
+    <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="/jqplot/jquery.jqplot.js"></script>
+	
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.canvasTextRenderer.js"></script>
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.categoryAxisRenderer.js"></script>
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.dateAxisRenderer.min.js"></script> 
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.canvasAxisTickRenderer.min.js"></script> 
+	
+    <script type="text/javascript" src="/angular.min.js"></script>  
+    <script type="text/javascript" src="/angular-ui-chart/src/chart.js"></script>
+	
+    <link rel="stylesheet" type="text/css" src="jquery.jqplot.min.css" />
+	
+</head>
+
+<body>
+
+<br><br>
+
+<section ng-app = "myChartApp" ng-controller = "DemoCtrl">  
+    <div ui-chart="someData" chart-options="myChartOpts" style = "height: 300px; width: 700px; position: fixed;
+    top: 30px; left: 100px;"></div>
+</section>
+
+
+<script>
+
+//alert("load myChartApp module");
+//angular.module('myChartApp', ['ui.chart'])
+
+var d = new Date();
+var n = d.getTime();
+
+// myChartApp Module
+angular.module('myChartApp', ['ui.chart'])
+
+    .value('charting', {
+	    lineChartOptions: {
+		    enablePlugins: true,
+		    title: 'Room 1 Temperature Chart (&degF)',
+//			showMarker: false,
+//			grid: {borderWidth:9.0},
+			series: [{showMarker: false, lineWidth: 3.0  }],
+			axesDefaults: {
+			    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+			    tickRenderer: $.jqplot.LineAxisTickRenderer,
+				tickOptions: {
+				    fontFamily: 'Georgia',
+					fontSize: '10pt',
+					angle: -30
+				}
+			},
+			series:{lineWidth:4, markerOptions:{style:'square'}},
+			axes: {
+			    xaxis: {
+//				    pad: 80,
+//				    min: 0,
+ //                   max: 10,
+//                    min: '2015-11-28', 
+                    min: n,
+//					max: '2015-11-30', 
+				    label: 'Sample Number',
+					labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+
+                    rendererOptions:{
+                    tickRenderer:$.jqplot.CanvasAxisTickRenderer
+                    },
+					
+					renderer:$.jqplot.DateAxisRenderer,
+					
+//					tickOptions: { formatString: '%#d' },    
+//					tickOptions: { formatString: '%b %#d, %#I %p',
+                    tickOptions: { formatString: '%H:%M:%S',
+								   fontFamily: 'Georgia, Serif'
+//                                   fontSize:'10pt', 
+//                                   fontFamily:'Tahoma', 
+//                                   angle:-60					
+					},     
+ //                   tickInterval: '1 hour',
+					tickInset: '1',
+					
+					
+//					renderer:$.jqplot.CategoryAxisRenderer,
+//					fontFamily: 'Georgia, Serif'
+				},
+				yaxis: {
+				    min: 60,
+					max: 80,
+//				    label: 'Temperature (F)',
+					labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+//					renderer:$.jqplot.CategoryAxisRenderer,
+					fontFamily: 'Georgia, Serif',
+//					angle: -90
+				}
+			},
+		    seriesDefaults: {
+//			    renderer: $.jqplot.LineRenderer,
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+				rendererOptions: {
+				    showDataLabels: true
+				}
+		    },
+//			legend: {show: true}
+//			legend: {show: false}
+		}
+	})   
+	
+	.controller('DemoCtrl', function($scope, charting){
+//	    var d = new Date();
+//		var n = d.getTime();
+//		alert(n);
+	    $scope.someData = [[
+
+//		 ['2012-08-01', 75], ['2012-08-02', 70], ['2012-08-03', 65]
+		
+//		[1, 70.4],
+//        ['2008-08-12',70],
+//		['2008-09-12',60.5]
+        [n, 79],
+        ['2015-11-28 1:00AM',60.7],
+        ['2015-11-29 1:00AM',73.7],
+		['2015-11-29 4:00PM',79.7],
+		['2015-11-29 8:00PM',69],
+		['2015-11-29 10:00PM',62],
+		['2015-12-09 12:00PM',60]
+//		[2, 70.5],
+//		[50, 70.3],
+//		[4, 70.55],
+//		[20, 70.1]   
+		]];
+		$scope.myChartOpts = charting.lineChartOptions;
+//		alert(Date.toString());
+	});    
+//alert("module myChartApp Loaded");
+	
+</script>
+<!--  Data: {{someData}}    -->
+
+
+
+  </body>
+</html>

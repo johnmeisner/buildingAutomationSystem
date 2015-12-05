@@ -1,0 +1,191 @@
+<!doctype html>
+<html ng-app="myApp">
+
+<head>
+  
+    <title>Thermostat App</title>	
+
+<!-- **************************** Javascript Includes ************************************** -->	
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>	
+    <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-ui/ui/jquery-ui.js"></script>
+	<script type="text/javascript" src="/jqplot/jquery.jqplot.js"></script>
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.canvasTextRenderer.js"></script>
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.categoryAxisRenderer.js"></script> 
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.dateAxisRenderer.min.js"></script>  	
+    <script type="text/javascript" src="/angular.min.js"></script>      
+	<script type="text/javascript" src="/angular-ui-chart/src/chart.js"></script>	
+	<script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.js"></script>	
+	<script type="text/javascript" src="/angular-ui-slider/src/slider.js"></script>
+    <script type="text/javascript" src="/angular-resource/angular-resource.js"></script> 	
+	<script type="text/javascript" src="/AppController.js"></script>
+	<link href='http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-resource.js' type='text/javascript'> 
+	<link href='http://sugarjs.com/release/current/sugar.min.js' type='text/javascript'>
+		
+<!-- ************************************* Css Includes ************************************ -->		
+    <link rel="stylesheet" type="text/css" src="jquery.jqplot.min.css" />
+	<link href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' 
+	rel='stylesheet' type='text/css'>  
+	
+<!-- ************************** In-Line Style CSS ****************************************** -->
+		<style>
+		
+		.ui-widget-content .ui-state-default { background: #800080; }
+		
+		body {
+			padding: 2em;
+		}
+		pre {
+			border: 1px solid #999;
+			padding: 1em;
+			background-color: #FFE;
+		}
+		li {
+			list-style-position: inside;
+		}
+		
+		hr { 
+            display: block;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            margin-left: auto;
+            margin-right: 70%;
+            border-style: inset;
+            border-width: 1px;
+        } 
+		
+		.warning {
+		    color: red;
+		}
+				
+		.sliderExample {
+			width: 740px;
+			padding: 2em;
+            background-color: #EFECF0;
+			border: 1px solid #f0f0f0;
+			margin: 2em;
+		}
+		.sliderExample > div {
+			margin: 1em 0;
+		}
+		.vertical-container {
+			width: 5%;
+			display: inline-block;
+		}
+		#swatch {
+			width: 100px;
+			height: 100px;
+			border: 1px solid black;
+		}
+		#red .ui-slider-range { background: #ef2929; }
+		#red .ui-slider-handle { border-color: #ef2929; }
+		#green .ui-slider-range { background: #8ae234; }
+		#green .ui-slider-handle { border-color: #8ae234; }
+		#blue .ui-slider-range { background: #729fcf; }
+		#blue .ui-slider-handle { border-color: #729fcf; }
+		
+		hr {
+           display: block;
+           margin-top: 0.5em;
+           margin-bottom: 0.5em;
+           margin-left: auto;
+           margin-right: 500px;
+           border-style: inset;
+           border-width: 1px;
+        } 
+		
+		#cs {
+		   font: bold 16px Arial;
+		   color: purple;
+		   background: yellow;
+		   height: 50px;
+		}
+	</style>
+	
+	<script>
+// ******************************* 1-Sec Date / Time *******************************************	
+	function myTimer() {
+        var d = new Date();
+        document.getElementById("datetime").innerHTML = d.toLocaleTimeString();
+    }
+	</script>
+	
+</head>
+
+<!-- *********************** App View paired with AppCtrl Controller *********************** -->
+
+<body ng-controller="AppCtrl">
+    <h2>Thermostat App, Rev 01.04.00, 11/24/2015</h2>
+	<p id="datetime"></p> 
+	
+<!-- ************** Chart View paired with DemoCtrl Controller (nested controller *********  -->
+<section ng-controller = "DemoCtrl">  
+    <div ui-chart="someData" chart-options="myChartOpts" style = "height: 250px; width: 680px; 
+	position: relative; top:5px; left: 50px;"></div>
+</section>
+
+<!-- ************* Current External Weather and Temperature ******************************** -->
+<br>
+<div ng-controller="WeatherController">
+<h3>Current <i>External</i> Temperature and Weather:</h3>
+  City :
+  <input type="text" ng-model="city" " ng-init="city='Del Mar'" /> 
+  <button ng-click="getWeather()">Get Weather</button>
+  <br/>
+  <br/>
+  <b>Current Weather Condition:</b>  <span>{{weatherDescription}}</span>
+  <br>
+  <b>Current External Temperature:</b>  <span>{{mainTemp}}</span>
+</div>	
+	
+<!-- ***************************** Room 1 Thermostat Slider ******************************** -->	
+<div class="sliderExample" ng-controller = "SetptCtrl"><a name="ex1"></a> 
+	<strong>Room 1 Thermostat Temperature Setpoint</strong>
+	<div ui-slider min="50" max="90" step="1" ng-model="tempSetpt"></div>
+	<input type="text" ng-model="tempSetpt" />
+	<button ng-click="addSetpt()">Send to Server</button><br>
+</div><br>
+	<button id=cs ng-click="customerServiceRequest()">Send Customer Service Request</button>   
+<br><br>
+
+<!-- *********************** Data Acquisition and Actuator Controls ************************ -->	
+	<h3>Room 1 Manual Actuator Controls:</h3>
+	<button ng-click="toggleFan()">Toggle Fan</button>
+	<button ng-click="toggleDamper()">Toggle Damper</button><br><br>
+	<strong>Current Damper Position: {{damperPosition}}</strong>
+	
+<br><hr><br>	
+
+    <h3>Room 1 Temperature Data Acquisition Controls:</h3>
+	<button ng-click="addTemp()">Start Temperature Collection</button>
+	<button ng-click="update()">Update Temp History</button>
+<!--	<button ng-click="customerServiceRequest()">Send Customer Service Request</button>   -->
+	
+<br><br>
+
+	Current Room 1 Temperature: <strong>{{alias}}</strong> F
+	<br>
+	
+    <table>
+      <tr>
+        <th><h4>Temperature History:</h4></th>
+
+      </tr>
+      <tr>
+        <td colspan="2">
+
+        </td>
+      </tr>
+     <tr ng-repeat="mapping in mappings track by $index ">
+        <td>{{mapping.alias}}</td>
+        <td>{{mapping.url}}</td>  
+      </tr>
+    </table>
+
+    <script>
+        var myVar1=setInterval(function(){myTimer()},1000);
+    </script>	
+
+  </body>
+</html>

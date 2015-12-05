@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Line Chart App App</title>
+    <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="/jqplot/jquery.jqplot.js"></script>
+	
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.canvasTextRenderer.js"></script>
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+
+	<script type="text/javascript" src="/jqplot/plugins/jqplot.categoryAxisRenderer.js"></script>
+    <script type="text/javascript" src="/angular.min.js"></script>  
+    <script type="text/javascript" src="/angular-ui-chart/src/chart.js"></script>
+	
+    <link rel="stylesheet" type="text/css" src="jquery.jqplot.min.css" />
+	
+</head>
+
+<body>
+
+<br><br>
+<script>
+$(document).ready(function(){
+  var line1=[['2008-08-12 4:00PM',4], ['2008-09-12 4:00PM',6.5], ['2008-10-12 4:00PM',5.7], ['2008-11-12 4:00PM',9], ['2008-12-12 4:00PM',8.2]];
+  var plot1 = $.jqplot('chart1', [line1], {
+    title:'Default Date Axis',
+    axes:{
+        xaxis:{
+            renderer:$.jqplot.DateAxisRenderer
+        }
+    },
+    series:[{lineWidth:4, markerOptions:{style:'square'}}]
+  });
+});
+</script>
+</body>
+</html>
