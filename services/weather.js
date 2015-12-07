@@ -3,16 +3,16 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var request = require('request');
+var globals = require('../globals');
 
 function Weather() {
     EventEmitter.call(this);
     var self = this;	
 	
     request({  
-//	    url:'http://api.openweathermap.org/data/2.5/weather?q=del+mar,us&APPID=f97bcd1cb2dff0efc0e8c17b0d1742eb',
-	    url:'http://api.openweathermap.org/data/2.5/weather?q=del+mar,us&APPID=f97bcd1cb2dff0efc0e8c17b0d1742eb',
-//		port: '10015',                                 // Philips proxy port
-//        proxy: 'http://199.168.151.10'                 // Philips proxy url
+        url: globals().weatherUrl,
+//		port: globals().port,
+//		proxy: globals().proxy                 
     }, 
 
         function (error, response, body) {
