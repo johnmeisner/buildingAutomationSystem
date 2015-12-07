@@ -1,9 +1,11 @@
 //******************* Customer Service ********************************
 
+var globals = require('../globals');
+
 function customerService() {
 // Twilio Credentials 
-var accountSid = 'ACd2695876597893c675a6438f5c0f9ea4'; 
-var authToken = '25895444137ec2724c5d690781cbf918'; 
+var accountSid = globals().accountSid; 
+var authToken = globals().authToken;
  
 //require the Twilio module and create a REST client 
 var client = require('twilio')(accountSid, authToken);
