@@ -56,7 +56,7 @@ var weatherPeriod = 60000;             // Weather every weatherPeriod sec
 // Instantiate BMS Objects
 var d = new DataServer(weatherPeriod);         // instantiates DataServer 
 
-mappings.create(12, 0, function() {console.log("finished creating collection")});
+mappings.create(d.getRoomTemp(0), 0, function() {console.log("finished creating collection")});
 
 var sampleNum = 0;
 var tempSetpt = 70; 

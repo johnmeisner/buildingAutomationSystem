@@ -14,6 +14,12 @@ var tempSetpt = 70;
 var d = new Date();
 var n = d.getTime();
 
+var datah1 = [];
+var datah2 = [];
+
+var Data = [];
+var Data1 = [[]];
+
 myApp.controller('AppCtrl', function($scope, $rootScope){
 
   $scope.mappings = [];
@@ -46,8 +52,16 @@ myApp.controller('AppCtrl', function($scope, $rootScope){
   };
 
   socket.on('list', function (documents) {
-    $scope.$apply(function () {
-      $scope.mappings = documents;
+      $scope.$apply(function () {
+          $scope.mappings = documents;
+	  
+//	      $scope.Data1 = [];	
+//         for (var i = 0; i < $scope.mappings.length; i++) {
+//	          datah1.push($scope.mappings[i].timestamp);
+//		      datah2.push($scope.mappings[i].alias);
+//	      }
+//		  Data1.push(datah1, datah2);
+//		  $rootScope.Data1 = Data1;
     });
   });
   
@@ -116,6 +130,47 @@ myApp.controller('AppCtrl', function($scope, $rootScope){
 		    }
 		}
 	})
+	
+   myApp.value('charting1', {
+	    lineChartOptions: {
+		    title: 'Room 1 Sensor (&degF) Hourly History ',
+			series: [{showMarker: true, lineWidth: 3  }],
+			axesDefaults: {
+			    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+				tickOptions: {
+				    fontFamily: 'Georgia',
+					fontSize: '10pt'
+				}
+			},
+			axes: {
+			    xaxis: {
+//                    min: 1451989481108,
+                    min: 1452464206153,
+				    label: 'Time (date:hour)',
+					labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+					fontFamily: 'Georgia, Serif',
+					renderer:$.jqplot.DateAxisRenderer,
+					tickOptions: { 
+                        formatString: '%D:%H',
+						fontFamily: 'Georgia, Serif', 
+                            angle:-60					
+					},     
+				},
+				yaxis: {
+				    min: 60,
+					max: 90,
+					labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+					fontFamily: 'Georgia, Serif'
+				}
+			},
+		    seriesDefaults: {
+				rendererOptions: {
+				    showDataLabels: true
+				}
+		    }
+		}
+	})
+
 
     myApp.controller('DemoCtrl', function($scope, $rootScope, charting){
 	$scope.someData = [[], [], []];	
@@ -127,7 +182,28 @@ myApp.controller('AppCtrl', function($scope, $rootScope){
 			   $scope.someData[2].push([date.getTime(), $rootScope.data2]);
         });		
 		$scope.myChartOpts = charting.lineChartOptions;
-	    })   	
+	    });   	
+	}); 
+	
+    myApp.controller('HistoryCtrl', function($scope, $rootScope, charting1){
+	$scope.someData1 = [[], [], []];	
+    socket.on('list', function (documents) {
+        $scope.$apply(function () {
+          $scope.mappings = documents;
+	  	
+ //         for (var i = 0; i < $scope.mappings.length; i++) { 
+          for (var i = 0; i < 24; i++) {
+//              if (i > 1) {	  
+			      var date1 = new Date($scope.mappings[i].timestamp);
+	              $scope.someData1[0].push([date1.getTime(), $scope.mappings[i].alias]);
+//			      $scope.someData1[1].push([date1.getTime(), $scope.mappings[i].alias]);
+//	     	      $scope.someData1[2].push([date1.getTime(), $scope.mappings[i].alias]);			  
+//	          }
+		  }
+		  
+		});			
+		$scope.myChartOpts = charting1.lineChartOptions;
+	    });   	
 	}); 
 
     myApp.controller('SetptCtrl', function($scope, $log){		

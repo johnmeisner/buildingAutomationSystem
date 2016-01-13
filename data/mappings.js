@@ -18,6 +18,7 @@ var mappings = {
     create: function (alias, url, callback) {
         var d = new Date();
 	    console.log("db: " + d);
+//        db.mappings.insert({ alias: alias, url: url, timestamp: d.getTime()}, callback);
         db.mappings.insert({ alias: alias, url: url, timestamp: d}, callback);
   },
 

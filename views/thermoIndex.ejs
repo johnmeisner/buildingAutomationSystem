@@ -120,14 +120,26 @@
 <!-- *********************** App View paired with AppCtrl Controller *********************** -->
 
 <body ng-controller="AppCtrl">
-    <h2>Thermostat App, GitHub featureA</h2>
+    <h2>Thermostat App, GitHub featureB</h2>
 	<p id="datetime"></p> 
 	
 <!-- ************** Chart View paired with DemoCtrl Controller (nested controller *********  -->
 <section ng-controller = "DemoCtrl">  
     <div ui-chart="someData" chart-options="myChartOpts" style = "height: 250px; width: 680px; 
 	position: relative; top:5px; left: 50px;"></div>
+	<br>
+	
+<!--	<div ui-chart="Data" chart-options="myChartOpts" style = "height: 250px; width: 680px; 
+	top:20px; left: 50px;"></div>  -->	
 </section>
+
+<!-- ************** Chart View paired with DemoCtrl Controller (nested controller *********  -->
+<section ng-controller = "HistoryCtrl">  
+    <div ui-chart="someData1" chart-options="myChartOpts" style = "height: 250px; width: 680px; 
+	position: relative; top:5px; left: 50px;"></div>
+</section>
+
+
 
 <!-- ************* Current External Weather and Temperature ******************************** -->
 <br>
