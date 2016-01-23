@@ -22,12 +22,12 @@ function Decimator ( factor ) {
 Decimator.prototype.run = function(input) {
   this.tillNextSample--;
   if ( this.tillNextSample >= 0 ) {
-	console.log("decimator: " + this.currentValue + " " + this.tillNextSample);
+//	console.log("decimator: " + this.currentValue + " " + this.tillNextSample);
     return this.currentValue;
   } else {
     this.tillNextSample = this.factor;
     this.currentValue = input;
-	console.log("decimator: " + this.currentValue);
+//	console.log("decimator: " + this.currentValue);
     return input;
   }
 }

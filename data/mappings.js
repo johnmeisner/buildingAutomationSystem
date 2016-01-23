@@ -10,8 +10,7 @@ var db = {
 var mappings = {
     get: function (alias, callback) {
         db.mappings.findOne({ alias: alias }, function (err, mapping) {
-            if (err || !mapping) { return callback(new Error('Alias not found.')); }
-            callback(null, mapping.url);
+            if (err || !mapping) { return callback(new Error('Alias not found.')); }         callback(null, mapping.url);
         });
     },
 
@@ -25,7 +24,11 @@ var mappings = {
     list: function (callback) {
         console.log("mappings: list()");
         db.mappings.find({}).sort({ timestamp: -1 }).exec(callback);
-    }
+    },
+	
+	latest: function (callback) {                                       // this method returns the most recent temp
+		db.mappings.find({}).sort({ timestamp: -1 }).exec(callback);
+	}
 };
 
 module.exports = mappings;
