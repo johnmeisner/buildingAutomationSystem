@@ -5,8 +5,9 @@
   
     <title>Thermostat App</title>	
 
-<!-- **************************** Javascript Includes ************************************** -->	
-	<script type="text/javascript" src="/socket.io/socket.io.js"></script>	
+<!-- **************************** Javascript Includes ************************************** 	
+	<script type="text/javascript" src="/socket.io-client/socket.io.js"></script>  -->
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>    
     <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="/jquery-ui/ui/jquery-ui.js"></script>
 	<script type="text/javascript" src="/jqplot/jquery.jqplot.js"></script>
@@ -22,6 +23,9 @@
 	<script type="text/javascript" src="/AppController.js"></script>
 	<link href='http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-resource.js' type='text/javascript'> 
 	<link href='http://sugarjs.com/release/current/sugar.min.js' type='text/javascript'>
+	
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
 		
 <!-- ************************************* Css Includes ************************************ -->		
     <link rel="stylesheet" type="text/css" src="jquery.jqplot.min.css" />
@@ -120,7 +124,8 @@
 <!-- *********************** App View paired with AppCtrl Controller *********************** -->
 
 <body ng-controller="AppCtrl">
-    <h2>Thermostat App, GitHub featureC</h2>
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    <h2>Thermostat App, GitHub featureD</h2>
 	<p id="datetime"></p> 
 	
 <!-- ************** Chart View paired with DemoCtrl Controller (nested controller *********  -->
@@ -170,7 +175,6 @@
 	<button ng-click="toggleFan()">Toggle Fan</button>
 	<button ng-click="toggleDamper()">Toggle Damper</button><br><br>
 	<strong>Current Damper Position: {{damperPosition}}</strong>
-	
 <br><hr><br>	
 
     <h3>Room 1 Temperature Data Acquisition Controls:</h3>

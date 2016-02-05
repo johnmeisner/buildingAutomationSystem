@@ -3,6 +3,7 @@
 var myApp = angular.module('myApp', ['ui.chart', 'ui.slider', 'ngResource']);
 var socket = io.connect();
 
+
 var alias = 55,
     url = 66;
 var	tempF;
@@ -180,12 +181,14 @@ myApp.controller('AppCtrl', function($scope, $rootScope){
 	$scope.someData1 = [[], [], []];	
     socket.on('list', function (documents) {
         $scope.$apply(function () {
-          $scope.mappings = documents;
+            $scope.mappings = documents;
 	  	 
-          for (var i = 0; i < 72; i++) {  
-			      var date1 = new Date($scope.mappings[i].timestamp);
-	              $scope.someData1[0].push([date1.getTime(), $scope.mappings[i].alias]);
-
+            for (var i = 0; i < 72; i++) {
+              	if ($scope.mappings[i] === undefined) {	}
+                else {				
+			        var date1 = new Date($scope.mappings[i].timestamp);
+	                $scope.someData1[0].push([date1.getTime(), $scope.mappings[i].alias]);
+                }
 		  }
 		  
 		});			
