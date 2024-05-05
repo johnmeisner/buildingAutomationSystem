@@ -4,7 +4,7 @@
   "main": "app.js",
   "dependencies": {
     "bonescript": "0.2.4",
-    "ejs": "3.0.1",
+    "ejs": "3.1.10",
     "express": "4.17.1",
     "jstat": "1.1.5",
     "nedb": "1.1.1",
